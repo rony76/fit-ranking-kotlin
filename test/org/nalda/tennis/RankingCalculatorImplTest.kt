@@ -82,6 +82,14 @@ class RankingCalculatorImplTest {
     }
 
     @Test fun ronyGenMag2016() {
+        val results = resultsGenMag()
+
+        val calculationResult = calculator.calculate(IV_NC, results, emptySet())
+        assertThat(calculationResult.newRanking, equalTo(IV_6))
+        System.out.println(calculationResult.calculationBreakdown)
+    }
+
+    private fun resultsGenMag(): ArrayList<Result> {
         val results = ArrayList<Result>(5)
 
         results.add(Result(LOSS, Player(IV_4)))
@@ -89,13 +97,26 @@ class RankingCalculatorImplTest {
         results.add(Result(WIN, Player(IV_NC)))
         results.add(Result(WIN, Player(IV_6)))
         results.add(Result(LOSS, Player(IV_5)))
-
-        val calculationResult = calculator.calculate(IV_NC, results, emptySet())
-        assertThat(calculationResult.newRanking, equalTo(IV_6))
-        System.out.println(calculationResult.calculationBreakdown)
+        return results
     }
 
     @Test fun ronyGiuNov2016() {
+        val results = resultsGiuNov()
+
+        val calculationResult = calculator.calculate(IV_6, results, emptySet())
+        assertThat(calculationResult.newRanking, equalTo(IV_5))
+        System.out.println(calculationResult.calculationBreakdown)
+    }
+
+    @Test fun rony2016IfItIsCalculatedAsWhole() {
+        val results = resultsGenMag() + resultsGiuNov()
+
+        val calculationResult = calculator.calculate(IV_NC, results, emptySet())
+        assertThat(calculationResult.newRanking, equalTo(IV_5))
+        System.out.println(calculationResult.calculationBreakdown)
+    }
+
+    private fun resultsGiuNov(): ArrayList<Result> {
         val results = ArrayList<Result>(5)
 
         results.add(Result(LOSS, Player(IV_NC)))
@@ -103,10 +124,8 @@ class RankingCalculatorImplTest {
         results.add(Result(WIN, Player(IV_NC)))
         results.add(Result(LOSS, Player(IV_5)))
         results.add(Result(WIN, Player(IV_NC)))
-
-        val calculationResult = calculator.calculate(IV_6, results, emptySet())
-        assertThat(calculationResult.newRanking, equalTo(IV_6))
-        System.out.println(calculationResult.calculationBreakdown)
+        results.add(Result(WIN, Player(IV_NC)))
+        return results
     }
 }
 
