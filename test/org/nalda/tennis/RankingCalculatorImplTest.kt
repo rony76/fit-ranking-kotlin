@@ -1,8 +1,6 @@
 package org.nalda.tennis
 
-import org.hamcrest.core.IsEqual
 import org.hamcrest.core.IsEqual.equalTo
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThat
 import org.junit.Test
@@ -12,12 +10,12 @@ import org.nalda.tennis.Ranking.*
 import java.util.*
 
 class RankingCalculatorImplTest {
-    private val calculator = RankingCalculatorImpl();
+    private val calculator: RankingCalculator = RankingCalculatorImpl();
 
     @Test fun ncStaysSuchIfNoMatchIsPlayed() {
-        val newRanking = calculator.calculate(IV_NC, Collections.emptySet(), emptySet())
+        val calculationResult = calculator.calculate(IV_NC, Collections.emptySet(), emptySet())
 
-        assertEquals(IV_NC, newRanking)
+        assertEquals(IV_NC, calculationResult.newRanking)
     }
 
 
@@ -75,9 +73,12 @@ class RankingCalculatorImplTest {
         // classifica era un 1° gruppo di III categoria.
         val bonuses = Collections.singleton(Bonus.tournamentWinWithBestRank(III_1))
 
-        val finalRanking = calculator.calculate(baseRanking, results, bonuses)
+        val calculationResult = calculator.calculate(baseRanking, results, bonuses)
 
-        System.out.println(finalRanking)
+        assertThat(calculationResult.newRanking, equalTo(II_8))
+        assertThat(calculationResult.calculationBreakdown.count(), equalTo(2))
+
+        System.out.println(calculationResult.calculationBreakdown)
     }
 
     @Test fun ronyGenMag2016() {
@@ -89,7 +90,9 @@ class RankingCalculatorImplTest {
         results.add(Result(WIN, Player(IV_6)))
         results.add(Result(LOSS, Player(IV_5)))
 
-        assertThat(calculator.calculate(IV_NC, results, emptySet()), equalTo(IV_6))
+        val calculationResult = calculator.calculate(IV_NC, results, emptySet())
+        assertThat(calculationResult.newRanking, equalTo(IV_6))
+        System.out.println(calculationResult.calculationBreakdown)
     }
 
     @Test fun ronyGiuNov2016() {
@@ -101,7 +104,9 @@ class RankingCalculatorImplTest {
         results.add(Result(LOSS, Player(IV_5)))
         results.add(Result(WIN, Player(IV_NC)))
 
-        assertThat(calculator.calculate(IV_6, results, emptySet()), equalTo(IV_6))
+        val calculationResult = calculator.calculate(IV_6, results, emptySet())
+        assertThat(calculationResult.newRanking, equalTo(IV_6))
+        System.out.println(calculationResult.calculationBreakdown)
     }
 }
 

@@ -15,12 +15,12 @@ class ResultTest {
 
     @Test
     fun ncWinsOverIV4() {
-        assertThat(Result(WIN, Player(IV_NC)).getPoints(IV_4), equalTo(120))
+        assertThat(Result(WIN, Player(IV_NC)).getPoints(IV_4), equalTo(15))
     }
 
     @Test
     fun iv4WinsOverNC() {
-        assertThat(Result(WIN, Player(IV_4)).getPoints(IV_NC), equalTo(15))
+        assertThat(Result(WIN, Player(IV_4)).getPoints(IV_NC), equalTo(120))
     }
 
 }

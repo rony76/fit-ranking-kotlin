@@ -1,14 +1,19 @@
 package org.nalda.tennis
 
+import org.nalda.tennis.RankingCalculator.CalculationResult
+import java.util.*
+
 class RankingCalculatorImpl : RankingCalculator {
-    override fun calculate(from: Ranking, results: Collection<Result>, bonuses: Collection<Bonus>): Ranking {
-        return calculate(from.basePoints, from, results, bonuses)
+    override fun calculate(from: Ranking, results: Collection<Result>, bonuses: Collection<Bonus>): CalculationResult {
+        val breakdown = calculate(from.basePoints, from, results, bonuses, emptyList())
+        return CalculationResult(breakdown.last().first, breakdown)
     }
 
-    private fun calculate(basePoints: Int, from: Ranking, results: Collection<Result>, bonuses: Collection<Bonus>): Ranking {
-        val relevantMatchesCount = from.matchesCount(results)
+    private fun calculate(basePoints: Int, from: Ranking, matchResults: Collection<Result>,
+                          bonuses: Collection<Bonus>, resultBreakdown: List<Pair<Ranking, Int>>): List<Pair<Ranking, Int>> {
+        val relevantMatchesCount = from.matchesCount(matchResults)
         val relevantMatches =
-                results
+                matchResults
                         .filter { it.outcome.isWin }
                         .sortedByDescending { it.opponent.ranking }
                         .take(relevantMatchesCount)
@@ -16,20 +21,20 @@ class RankingCalculatorImpl : RankingCalculator {
         val totalPoints = basePoints +
                 relevantMatches.sumBy { it.getPoints(from) } +
                 bonuses.sumBy { it.getPoints(from) } +
-                noLossBonus(from, results)
+                noLossBonus(from, matchResults)
 
+        val newResult = resultBreakdown + Pair(from, totalPoints)
 
         if (totalPoints <= from.demotionThreshold)
-            return from.demote()
+            return newResult
 
         if (totalPoints < from.promotionThreshold)
-            return from
+            return newResult
 
-        val promotedRanking = from.promote()
-        if (promotedRanking == Ranking.best())
-            return promotedRanking
+        if (from == Ranking.best())
+            return newResult
 
-        return calculate(basePoints, promotedRanking, results, bonuses)
+        return calculate(basePoints, from.promote(), matchResults, bonuses, newResult)
     }
 
     private fun noLossBonus(from: Ranking, results: Collection<Result>): Int {
