@@ -16,6 +16,20 @@ class RankingCalculatorImplTest {
         val calculationResult = calculator.calculate(IV_NC, Collections.emptySet(), emptySet())
 
         assertEquals(IV_NC, calculationResult.newRanking)
+        assertThat(calculationResult.calculationBreakdown.size, equalTo(1))
+
+        System.out.println(calculationResult.calculationBreakdown)
+    }
+
+    @Test fun iv4isDemotedIfNoMatchIsPlayed() {
+        val calculationResult = calculator.calculate(IV_4, Collections.emptySet(), emptySet())
+
+        assertEquals(IV_5, calculationResult.newRanking)
+        assertThat(calculationResult.calculationBreakdown.size, equalTo(2))
+        assertThat(calculationResult.calculationBreakdown[0].first, equalTo(IV_4))
+        assertThat(calculationResult.calculationBreakdown[1].first, equalTo(IV_5))
+
+        System.out.println(calculationResult.calculationBreakdown)
     }
 
 
@@ -112,7 +126,7 @@ class RankingCalculatorImplTest {
         val results = resultsGenMag() + resultsGiuNov()
 
         val calculationResult = calculator.calculate(IV_NC, results, emptySet())
-        assertThat(calculationResult.newRanking, equalTo(IV_5))
+        assertThat(calculationResult.newRanking, equalTo(IV_4))
         System.out.println(calculationResult.calculationBreakdown)
     }
 
@@ -125,6 +139,7 @@ class RankingCalculatorImplTest {
         results.add(Result(LOSS, Player(IV_5)))
         results.add(Result(WIN, Player(IV_NC)))
         results.add(Result(WIN, Player(IV_NC)))
+        results.add(Result(WIN, Player(IV_5)))
         return results
     }
 }

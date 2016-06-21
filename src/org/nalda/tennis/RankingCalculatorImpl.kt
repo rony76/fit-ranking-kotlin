@@ -23,10 +23,11 @@ class RankingCalculatorImpl : RankingCalculator {
                 bonuses.sumBy { it.getPoints(from) } +
                 noLossBonus(from, matchResults)
 
-        val newResult = resultBreakdown + Pair(from, totalPoints)
+        if (resultBreakdown.isEmpty() && (totalPoints <= from.demotionThreshold)) {
+            return Arrays.asList(Pair(from, totalPoints), Pair(from.demote(), 0))
+        }
 
-        if (totalPoints <= from.demotionThreshold)
-            return newResult
+        val newResult = resultBreakdown + Pair(from, totalPoints)
 
         if (totalPoints < from.promotionThreshold)
             return newResult

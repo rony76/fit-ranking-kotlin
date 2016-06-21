@@ -67,7 +67,8 @@ enum class Ranking(val tier: Tier, val basePoints: Int,
             in 6..10 -> 2
             in 11..15 -> 3
             in 16..20 -> 4
-            else -> 5
+            else ->
+                if (additionalMatchesFactor < 0) 0 else 5
         }
     }
 
@@ -84,7 +85,7 @@ enum class Ranking(val tier: Tier, val basePoints: Int,
         val v = wins.count()
         var e = lossesAfterMatchStartByDelta[0].orEmpty().count()
         var i = lossesAfterMatchStartByDelta[-1].orEmpty().count()
-        var g = lossesAfterMatchStartByDelta[-2].orEmpty().count()
+        var g = lossesAfterMatchStartByDelta.filterKeys { it < -1 }.values.flatten().count()
 
         if (lossesByWalkOverCount >= 3) e++
         if (lossesByWalkOverCount >= 4) i++
